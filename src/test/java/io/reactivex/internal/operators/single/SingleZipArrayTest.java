@@ -26,7 +26,6 @@ import io.reactivex.internal.functions.Functions;
 import io.reactivex.observers.TestObserver;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 
 public class SingleZipArrayTest {
 
@@ -36,7 +35,6 @@ public class SingleZipArrayTest {
             return "" + a + b;
         }
     };
-
 
     final Function3<Object, Object, Object, Object> addString3 = new Function3<Object, Object, Object, Object>() {
         @Override
@@ -114,7 +112,7 @@ public class SingleZipArrayTest {
 
     @Test
     public void innerErrorRace() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < TestHelper.RACE_DEFAULT_LOOPS; i++) {
             List<Throwable> errors = TestHelper.trackPluginErrors();
             try {
                 final PublishProcessor<Integer> pp0 = PublishProcessor.create();
@@ -139,7 +137,7 @@ public class SingleZipArrayTest {
                     }
                 };
 
-                TestHelper.race(r1, r2, Schedulers.single());
+                TestHelper.race(r1, r2);
 
                 to.assertFailure(TestException.class);
 
@@ -151,6 +149,7 @@ public class SingleZipArrayTest {
             }
         }
     }
+
     @SuppressWarnings("unchecked")
     @Test(expected = NullPointerException.class)
     public void zipArrayOneIsNull() {
